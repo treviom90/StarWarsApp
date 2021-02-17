@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <title>
+    Mi web de star wars
+  </title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body style="background-color: black;">
+  <img style="display: block; margin: 0 auto"
+    src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Star_Wars_Logo.svg/694px-Star_Wars_Logo.svg.png">
+  <div class="container">
+    <div style="text-align: center;">
+      <h3 style="color:yellow">Bienvenido a mi web de Star Wars!</h3>
+      <button class="btn btn-success" onclick="search()">Buscar</button>
+    </div>
+
+    <div id="results">
+
+    </div>
+
+    <div style="text-align: right;" id="footerPage">
+      <button style="display:none;" id="buttonBack" onclick="back()" class="btn btn-warning">
+        << </button>
+          <button style="display:none;" id="buttonNext" onclick="next()" class="btn btn-success"> >> </button>
+    </div>
+  </div>
+</body>
+
+<script>
+
+  var nextPage = "";
+  var lastPage = "";
+  var currentApiURL = "";
+
+  function next() {
+    currentApiURL = nextPage;
+    FindStarWarsPeople();
+
+  }
+
+  function back() {
+    currentApiURL = lastPage;
+    FindStarWarsPeople();
+
+  }
+
+  function search() {
+    currentApiURL = "http://swapi.dev/api/people";
+    FindStarWarsPeople();
+
+  }
+
+
+  function FindStarWarsPeople() {
+    document.getElementById("results").innerHTML = "";
+    debugger;
+    var data = undefined;
+    var request = new XMLHttpRequest();
+    request.open('GET', currentApiURL, true);
+    request.send();
+
+    request.onreadystatechange = function () {
+
+      if (this.readyState == 4 && this.status == 200) {
+        debugger;
+
+        var resultRawData = this.response;
+        data = JSON.parse(resultRawData);
+        showApiData(data);
+
+      }
+
+    }
+
+  }
+
+  function showApiData(data) {
+    var element = document.getElementById("results");
+    var countingHtml = document.createElement('h4');
+    countingHtml.style.color = "yellow";
+    countingHtml.innerHTML = "Cantidad de personajes encontrados: " + data.count;
+    element.appendChild(countingHtml);
+
+    for (var i = 0; i < data.results.length; i++) {
+
+      var currentItem = data.results[i];
+      var personaje = document.createElement('h5');
+      personaje.style.color = "yellow";
+      var htmlStyle = "<hr/ ><strong>" + currentItem.name + "</strong><br />";
+      htmlStyle += " Genero: " + currentItem.gender;
+      personaje.innerHTML = htmlStyle;
+
+      document.getElementById('results').appendChild(personaje);
+
+    }
+
+
+    debugger;
+    if (data.next != null) {
+      debugger;
+      document.getElementById("buttonNext").style.display = "inline";
+      nextPage = data.next
+    }
+    else {
+      document.getElementById("buttonNext").style.display = "none";
+    }
+
+    if (data.previous != null) {
+      debugger;
+      document.getElementById("buttonBack").style.display = "inline";
+      lastPage = data.previous;
+    }
+    else {
+      document.getElementById("buttonBack").style.display = "none";
+    }
+
+  }
+
+</script>
+
+</html>
